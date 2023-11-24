@@ -56,17 +56,47 @@ const TestBench = function () {
         createSpy: Func(),
 
         /**
-         * @private @static @function $_isSpy
+         * @public @static @function $isSpy
          * @param {TestBench.Func} spy
          * @returns {boolean} 
          */
-        $_isSpy(spy){
-            return ( 
-                typeof spy.haveBeenCalledTimes() === 'number' &&
-                spy.getName() !== undefined &&
-                typeof spy.getStoredParams() === 'object' &&
-                spy.firstCalled() !== undefined
-            );
+        $isSpy(spy){
+            if(spy){
+                if(spy.haveBeenCalledTimes && spy.getName && spy.getStoredParams && spy.firstCalled){
+                    return (
+                        typeof spy.haveBeenCalledTimes() === 'number' &&
+                        spy.getName() !== undefined &&
+                        typeof spy.getStoredParams() === 'object' &&
+                        spy.firstCalled() !== undefined
+                    );
+                }
+            }
+            return false;
+        },
+
+        /**
+         * @private @function _getMicroSeconds
+         * @returns {number} microseconds 
+         */
+        _getMicroSeconds(){
+            return new Date().getTime() * 1000 + (performance.now() * 1000);
+        },
+
+        /**
+         * Returns the time based on the Browser (milliseconds / microseconds)
+         * 
+         * @returns {number} browserTime
+         */
+        $getBrowserTime(){
+            return (this._supportsMicroseconds() ? new Date().getTime() : this._getMicroSeconds());
+        },
+
+        /**
+         * @private @function _supportsMicroseconds
+         * @returns {boolean} supportsMicroseconds
+         */
+        _supportsMicroseconds() {
+            return typeof performance === 'object' && typeof performance.now === 'function';
         }
     }
 }

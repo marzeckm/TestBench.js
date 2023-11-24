@@ -33,7 +33,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         evaluateTest: function (result, expectationName) {
             (result) ? this._testPassed(expectationName) : this._testFailed(expectationName);
             if(this.context){
-                console.log(['%cContext:', this.context].join(), 'font-style: italic; color: grey;');
+                console.log(['%cContext:', this.context].join(" "), 'font-style: italic; color: grey;');
             }
         },
 
@@ -53,7 +53,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         toEqual: function (expected) {
             this.evaluateTest(
                 (JSON.stringify(this.value) === JSON.stringify(expected)) === !this.isNot,
-                'to Equal'
+                this._toBeTextWithValue('to Equal', expected)
             );
         },
 
@@ -72,7 +72,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         toBeInstanceOf: function (expected) {
             this.evaluateTest(
                 (typeof this.value === expected) === !this.isNot,
-                'to be instance of'
+                this._toBeTextWithValue('to have been called before', expected)
             );
         },
 
@@ -107,11 +107,11 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @returns {void}
          */
         toHaveBeenCalledTimes: function (expected) {
-            if (TestBench().$_isSpy(this.value)) {
+            if (TestBench().$isSpy(this.value)) {
                 this.name = this.value.getName();
                 this.evaluateTest(
                     (this.value.haveBeenCalledTimes() === expected) === !this.isNot,
-                    'to have been called before'
+                    this._toBeTextWithValue('to have been called before', expected)
                 );
             } else {
                 console.error('The specified value to check is not a TestBench.Spy!');
@@ -126,10 +126,10 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         toHaveBeenCalledOnceWith: function () {
             const params = Array.prototype.slice.call(arguments);
 
-            if (TestBench().$_isSpy(this.value)) {
+            if (TestBench().$isSpy(this.value)) {
                 this.name = this.value.getName();
                 this.evaluateTest(
-                    (this.value.haveBeenCalledTimes() === 1 && JSON.stringify(this.value.getStoredParams()) === JSON.stringify(arguments)) === !this.isNot,
+                    (this.value.haveBeenCalledTimes() === 1 && JSON.stringify(this.value.getStoredParams()) === JSON.stringify(params)) === !this.isNot,
                     'to have been called once with'
                 );
             } else {
@@ -164,10 +164,11 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          */
         toHaveBeenCalledWith: function () {
             const params = Array.prototype.slice.call(arguments);
-            if (TestBench().$_isSpy(this.value)) {
+
+            if (TestBench().$isSpy(this.value)) {
                 this.name = this.value.getName();
                 this.evaluateTest(
-                    (JSON.stringify(this.value.getStoredParams) === JSON.stringify(params)) === !this.isNot,
+                    (JSON.stringify(this.value.getStoredParams()) === JSON.stringify(params)) === !this.isNot,
                     'to have been called with'
                 );
             } else {
@@ -179,10 +180,10 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @returns {void}
          */
         toHaveBeenCalled: function () {
-            if (TestBench().$_isSpy(this.value)) {
+            if (TestBench().$isSpy(this.value)) {
                 this.name = this.value.getName();
                 this.evaluateTest(
-                    (this.value.haveBeenCalledTimes > 0) === !this.isNot,
+                    (this.value.haveBeenCalledTimes() > 0) === !this.isNot,
                     'to have been called'
                 );
             } else {
@@ -198,7 +199,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         toBe: function (expected) {
             this.evaluateTest(
                 (this.value === expected) === !this.isNot,
-                'to be'
+                this._toBeTextWithValue('to be', expected)
             );
         },
 
@@ -211,7 +212,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
             const multiplier = 10 ** (precision || 2);
             this.evaluateTest(
                 (Math.round(this.value * multiplier) / multiplier === Math.round(expected * multiplier) / multiplier) === !this.isNot,
-                ['to be close to', expected].join(' ')
+                this._toBeTextWithValue('to be close to', expected)
             );
         },
 
@@ -233,7 +234,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         toBeGreaterThan: function (expected) {
             this.evaluateTest(
                 (this.value > expected) === !this.isNot,
-                ['to be greater than', this.value+''].join(' ')
+                this._toBeTextWithValue('to be greater than', expected)
             );
         },
 
@@ -245,7 +246,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         toBeGreaterThanOrEqual: function (expected) {
             this.evaluateTest(
                 (this.value >= expected) === !this.isNot,
-                ['to be greater than or equal', this.value+''].join(' ')
+                this._toBeTextWithValue('to be greater than or equal', expected)
             );
         },
 
@@ -257,7 +258,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         toBeLessThan: function (expected) {
             this.evaluateTest(
                 (this.value < expected) === !this.isNot,
-                ['to be less than', this.value+''].join(' ')
+                this._toBeTextWithValue('to be less than', expected)
             );
         },
 
@@ -311,12 +312,12 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
             try {
                 this.evaluateTest(
                     (this.value.indexOf(expected) >= 0) === !this.isNot,
-                    'to contain'
+                    this._toBeTextWithValue('to contain', expected)
                 );
             } catch (e) {
                 this.evaluateTest(
                     (Object.keys(this.value).indexOf(expected) >= 0) === !this.isNot,
-                    'to contain'
+                    this._toBeTextWithValue('to contain', expected)
                 );
             }
         },
@@ -327,11 +328,11 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @returns {void}
          */
         toHaveBeenCalledBefore: function (expected) {
-            if (TestBench().$_isSpy(this.value) && TestBench().$_isSpy(expected)) {
+            if (TestBench().$isSpy(this.value) && TestBench().$isSpy(expected)) {
                 this.name = this.value.getName();
                 this.evaluateTest(
                     (this.value.firstCalled() < expected.firstCalled()) === !this.isNot,
-                    'to have been called before'
+                    this._toBeTextWithValue('to have been called before', expected)
                 );
             } else {
                 console.error('The specified value / expected to check is not a TestBench.Spy!');
@@ -346,7 +347,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
             if (this.value instanceof Element) {
                 this.evaluateTest(
                     (this.value.classList.value.indexOf(expected) >= 0) === !this.isNot,
-                    'to have class'
+                    this._toBeTextWithValue('to have class', expected)
                 );
             } else {
                 console.error('The specified value to check is not a DOM-Element');
@@ -361,7 +362,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         toHaveSize: function (expected) {
             this.evaluateTest(
                 (Object.keys(this.value).length == expected) === !this.isNot,
-                'to have size'
+                this._toBeTextWithValue('to have size', expected)
             );
         },
 
@@ -373,7 +374,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         toMatch: function (expected) {
             this.evaluateTest(
                 ((expected instanceof RegExp) ? expected.test(this.value) : this.value.indexOf(expected) >= 0) === !this.isNot,
-                ['to match', '"'+this.value+'"'].join(' ')
+                this._toBeTextWithValue('to match', expected)
             );
         },
 
@@ -382,13 +383,15 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {any} expected 
          * @returns {void}
          */
-        toThrow: function (expected=null) {
+        toThrow: function (expected) {
+            expected = expected || null;
+
             try{
                 this.value();
             }catch(e){
                 this.evaluateTest(
                     (expected ? e.name === expected.name : true) === !this.isNot,
-                    'to throw'
+                    this._toBeTextWithValue('to have class', (expected ? expected : ''))
                 );
             }
         },
@@ -408,7 +411,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
             }catch(e){
                 this.evaluateTest(
                     ((expected ? this._compareError(e, message) : true)) === !this.isNot,
-                    'to throw error'
+                    this._toBeTextWithValue('to throw error', (expected ? expected : ''))
                 );
             }
         },
@@ -424,7 +427,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
             }catch(e){
                 this.evaluateTest(
                     (predicate(e)) === !this.isNot,
-                    'to throw matching'
+                    this._toBeTextWithValue('to throw matching', (predicate ? predicate : ''))
                 );
             }
         },
@@ -436,8 +439,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @returns {TestBench.ArrayLikeMatchers<string>}
          */
         withContext: function (message) {
-            this.context = message;
-            return this;
+            return ArrayLikeMatchers(value, isNot, message, name);
         },
 
         /**
@@ -456,7 +458,32 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @returns {string} valueInParanthesis
          */
         _valueInParenthesis() {
-            return ['"', this.value + '', '"'].join('');
+            return ['"', this._getValueName(this.value) + '', '"'].join('');
+        },
+
+        /**
+         * @param {any} value
+         */
+        _getValueName(value) {
+            if(TestBench().$isSpy()){
+                return (value.getName() ? value.getName() : value.name);
+            }else if(typeof value === 'function'){
+                return value.name;
+            }
+            return value;
+        },
+
+        /**
+         * Returns the expectation with the expected value
+         * 
+         * @private @function _toBeTextWithValue
+         * 
+         * @param {string} toBeText
+         * @param {any} expected 
+         * @returns {string}
+         */
+        _toBeTextWithValue(toBeText, expected) {
+            return [toBeText, ['"', this._getValueName(expected)+'"'].join('')].join(' ');
         },
 
         /**

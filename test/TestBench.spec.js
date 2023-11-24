@@ -152,20 +152,38 @@ describe('TestBench-Testingservice', () => {
         expect(testNode).not.toHaveClass('House');
     });
 
+    it('should show context in Console', () => {
+        expect(true).withContext('Test Context').toBeTrue();
+        expect(true).not.withContext('Test Context').toBeNull();
+        expect(true).withContext('Test Context').not.toBeNull();
+    });
+
     it('should handle spies correctly', () => {
         //given
-        let spy2 = testBench.createSpy();
+        const spy2 = testBench.createSpy();
+        const spy3 = testBench.createSpy();
+        const testString = "haus";
+        const testBoolean = true;
 
         // when
         spy();
-        spy2();
+        spy3();
+        spy2(testString, testBoolean);
+        spy3();
+        spy3();
+
 
         // then
         expect(spy).toHaveBeenCalledBefore(spy2);
+        expect(spy2).not.toHaveBeenCalledBefore(spy);
+        expect(spy3).toHaveBeenCalledBefore(spy2);
+
         expect(spy).toHaveBeenCalled();
         expect(spy).toHaveBeenCalledWith();
         expect(spy).toHaveBeenCalledOnceWith();
+        expect(spy2).toHaveBeenCalledOnceWith(testString, testBoolean);
         expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy3).toHaveBeenCalledTimes(3);
     });
 
     it('should handle asynchronous code', fakeAsync(() => {

@@ -44,9 +44,13 @@ const Func = function () {
          * @returns {TestBench.Func.Spy}
          */
         function Spy() {
+            const waitingTill = TestBench().$getBrowserTime() + 1;
+            
+            while(TestBench().$getBrowserTime() < waitingTill);
+
             callCount++;
             if(!firstCalled){
-                firstCalled = new Date().getTime();
+                firstCalled = waitingTill - 1;
             }
 
             if(originalFn){
@@ -62,7 +66,7 @@ const Func = function () {
             }
 
             // stores the parameters
-            storedParams.push(Array.from(arguments));
+            storedParams = Array.prototype.slice.call(arguments);
 
             // returns the (if) set return-value
             return returnValue;

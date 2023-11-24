@@ -103,7 +103,7 @@ const ArrayLikeMatchers = function () {
          * @returns {void}
          */
         toHaveBeenCalledTimes: function (expected) {
-            if (TestBench().$_isSpy(this.value)) {
+            if (TestBench().$isSpy(this.value)) {
                 this.name = this.value.getName();
                 this.evaluateTest(
                     (this.value.haveBeenCalledTimes() === expected) === !this.isNot,
@@ -122,7 +122,7 @@ const ArrayLikeMatchers = function () {
         toHaveBeenCalledOnceWith: function () {
             const params = Array.prototype.slice.call(arguments);
 
-            if (TestBench().$_isSpy(this.value)) {
+            if (TestBench().$isSpy(this.value)) {
                 this.name = this.value.getName();
                 this.evaluateTest(
                     (this.value.haveBeenCalledTimes() === 1 && JSON.stringify(this.value.getStoredParams()) === JSON.stringify(arguments)) === !this.isNot,
@@ -160,7 +160,7 @@ const ArrayLikeMatchers = function () {
          */
         toHaveBeenCalledWith: function () {
             const params = Array.prototype.slice.call(arguments);
-            if (TestBench().$_isSpy(this.value)) {
+            if (TestBench().$isSpy(this.value)) {
                 this.name = this.value.getName();
                 this.evaluateTest(
                     (JSON.stringify(this.value.getStoredParams) === JSON.stringify(params)) === !this.isNot,
@@ -175,7 +175,7 @@ const ArrayLikeMatchers = function () {
          * @returns {void}
          */
         toHaveBeenCalled: function () {
-            if (TestBench().$_isSpy(this.value)) {
+            if (TestBench().$isSpy(this.value)) {
                 this.name = this.value.getName();
                 this.evaluateTest(
                     (this.value.haveBeenCalledTimes > 0) === !this.isNot,
@@ -319,7 +319,7 @@ const ArrayLikeMatchers = function () {
          * @returns {void}
          */
         toHaveBeenCalledBefore: function (expected) {
-            if (TestBench().$_isSpy(this.value) && TestBench().$_isSpy(expected)) {
+            if (TestBench().$isSpy(this.value) && TestBench().$isSpy(expected)) {
                 this.name = this.value.getName();
                 this.evaluateTest(
                     (this.value.firstCalled() < expected.firstCalled()) === !this.isNot,
@@ -666,11 +666,11 @@ const TestBench = function () {
         createSpy: Func(),
 
         /**
-         * @private @static @function $_isSpy
+         * @private @static @function $isSpy
          * @param {TestBench.Func} spy
          * @returns {boolean} 
          */
-        $_isSpy(spy){
+        $isSpy(spy){
             return ( 
                 typeof spy.haveBeenCalledTimes() === 'number' &&
                 spy.getName() !== undefined &&
