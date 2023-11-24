@@ -32,6 +32,11 @@ const TestBench = function () {
         runnedExpectations: 0,
 
         /**
+         * @public @var {number} runnedLocalExpectations
+         */
+        runnedLocalExpectations: 0,
+
+        /**
          * @public @var {function | null}
          */
         beforeEachAction: null,

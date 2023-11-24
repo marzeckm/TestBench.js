@@ -1,19 +1,29 @@
-const ArrayLikeMatchers = function () {
-    const matchers = {
-        value: null,
-        isNot: false,
-        context: null,
-        name: "",
+/**
+ * 
+ * @param {any} value? 
+ * @param {boolean} isNot? 
+ * @param {string | null} context? 
+ * @param {string} name?
+ * @returns 
+ */
+const ArrayLikeMatchers = function (value, isNot, context, name) {
+    // Standardvalues for function (ie11 fallback)
+    isNot = isNot || false;
+    context = context || null;
+    name = name || "";
+
+    return {
+        value: value,
+        isNot: isNot,
+        context: context,
+        name: name,
 
         /**
          * Returns the negative version of the expectations
          * 
          * @returns {TestBench.ArrayLikeMatchers<String>}
          */
-        not: function () {
-            this.isNot = !this.isNot;
-            return this;
-        },
+        not: (!isNot) ? ArrayLikeMatchers(value, true, context, name) : undefined,
 
         /**
          * @param {boolean} result
@@ -187,7 +197,7 @@ const ArrayLikeMatchers = function () {
          */
         toBe: function (expected) {
             this.evaluateTest(
-                this.value === expected,
+                (this.value === expected) === !this.isNot,
                 'to be'
             );
         },
@@ -197,8 +207,12 @@ const ArrayLikeMatchers = function () {
          * @param {number} expected 
          * @param {any} precision 
          */
-        toBeCloseTo: function (expected, precision = null) {
-
+        toBeCloseTo: function (expected, precision) {
+            const multiplier = 10 ** (precision || 2);
+            this.evaluateTest(
+                (Math.round(this.value * multiplier) / multiplier === Math.round(expected * multiplier) / multiplier) === !this.isNot,
+                ['to be close to', expected].join(' ')
+            );
         },
 
         /**
@@ -219,7 +233,7 @@ const ArrayLikeMatchers = function () {
         toBeGreaterThan: function (expected) {
             this.evaluateTest(
                 (this.value > expected) === !this.isNot,
-                'to be greater than'
+                ['to be greater than', this.value+''].join(' ')
             );
         },
 
@@ -231,7 +245,7 @@ const ArrayLikeMatchers = function () {
         toBeGreaterThanOrEqual: function (expected) {
             this.evaluateTest(
                 (this.value >= expected) === !this.isNot,
-                'to be greater than or equal'
+                ['to be greater than or equal', this.value+''].join(' ')
             );
         },
 
@@ -243,7 +257,7 @@ const ArrayLikeMatchers = function () {
         toBeLessThan: function (expected) {
             this.evaluateTest(
                 (this.value < expected) === !this.isNot,
-                'to be less than'
+                ['to be less than', this.value+''].join(' ')
             );
         },
 
@@ -264,7 +278,7 @@ const ArrayLikeMatchers = function () {
          */
         toBeNaN: function () {
             this.evaluateTest(
-                (this.value === NaN) === !this.isNot,
+                (isNaN(this.value)) === !this.isNot,
                 'to be NaN'
             );
         },
@@ -331,7 +345,7 @@ const ArrayLikeMatchers = function () {
         toHaveClass: function (expected) {
             if (this.value instanceof Element) {
                 this.evaluateTest(
-                    (this.value.classList.indexOf(expected) >= 0) === !this.isNot,
+                    (this.value.classList.value.indexOf(expected) >= 0) === !this.isNot,
                     'to have class'
                 );
             } else {
@@ -359,7 +373,7 @@ const ArrayLikeMatchers = function () {
         toMatch: function (expected) {
             this.evaluateTest(
                 ((expected instanceof RegExp) ? expected.test(this.value) : this.value.indexOf(expected) >= 0) === !this.isNot,
-                'to have size'
+                ['to match', '"'+this.value+'"'].join(' ')
             );
         },
 
@@ -373,7 +387,7 @@ const ArrayLikeMatchers = function () {
                 this.value();
             }catch(e){
                 this.evaluateTest(
-                    (expected ? e === expected : !!e) === !this.isNot,
+                    (expected ? e.name === expected.name : true) === !this.isNot,
                     'to throw'
                 );
             }
@@ -382,14 +396,18 @@ const ArrayLikeMatchers = function () {
         /**
          * 
          * @param {any} expected
+         * @param {string} message
          * @returns {void}
          */
-        toThrowError: function (expected = null, message = null) {
+        toThrowError: function (expected, message) {
+            expected = expected || null;
+            message = message || null;
+
             try{
                 this.value();
             }catch(e){
                 this.evaluateTest(
-                    ((expected ? e === expected : true) && (e.message ? e.message === message : true)) === !this.isNot,
+                    ((expected ? this._compareError(e, message) : true)) === !this.isNot,
                     'to throw error'
                 );
             }
@@ -463,9 +481,17 @@ const ArrayLikeMatchers = function () {
                 ['%c', this._getExpectationText(expectationName), ' (failed)'].join(''),
                 'color: red;'
             );
-            testBench.failedAssertions += 1;
+            testBench.failedExpectations += 1;
         },
-    };
 
-    return matchers;
+        /**
+         * @private @function _compareError
+         * @param {Error} error1
+         * @param {Error} error2
+         */
+        _compareError(error1, error2){
+            return error1.name === error2.name &&
+                   error1.message === error2.message
+        }
+    };
 }

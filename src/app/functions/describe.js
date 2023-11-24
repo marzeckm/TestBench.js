@@ -9,6 +9,7 @@ const describe = function (description, specDefinitions) {
     // creates the testBench object for the test
     testBench = TestBench();
     testBench.componentName = description;
+    testBench.runnedExpectations = 0;
 
     // print the test description
     console.log(["%c", "Test: ", description].join(""), "font-weight: 700; font-size: 1.25em;");
@@ -23,19 +24,14 @@ const describe = function (description, specDefinitions) {
 
     // Prints how many Tests have failed / passed
     const passedExpectations = testBench.runnedExpectations - testBench.failedExpectations;
+    console.log(
+        '\n%c' + [passedExpectations, '/', testBench.runnedExpectations, "tests passed"].join(" "),
+        'color: green; font-size: 1.25em;'
+    );
     if(testBench.failedExpectations > 0){
         console.log(
-            '\n%c' + [passedExpectations, '/', testBench.runnedExpectations, "tests passed"].join(" "),
+            '%c' + [testBench.failedExpectations, '/', testBench.runnedExpectations, "tests failed"].join(" "),
             'color: red; font-size: 1.25em;'
-        );
-        console.log(
-            '%c' + [testbench.failedExpectations, '/', testBench.runnedExpectations, "tests failed"].join(" "),
-            'color: red; font-size: 1.25em;'
-        );
-    }else{
-        console.log(
-            '\n%c' + [passedExpectations, '/', testBench.runnedExpectations, "tests passed"].join(" "),
-            'color: green; font-size: 1.25em;'
         );
     }
 };

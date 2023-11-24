@@ -10,7 +10,7 @@ const it = function (expectation, assertion) {
         // Saves the assertion-data
         testBench.runnedAssertions += 1;
         testBench.runnedAssertionName = expectation;
-        testBench.runnedExpectations = 0;
+        testBench.runnedLocalExpectations = 0;
 
         // runs the before each
         if(testBench.beforeEachAction){
@@ -26,7 +26,7 @@ const it = function (expectation, assertion) {
         // runs the test case itself
         assertion();
 
-        if (testBench.runnedExpectations <= 0) {
+        if (testBench.runnedLocalExpectations <= 0) {
             console.log(
                 "%cNo expectations for test case found!", 
                 "color: red; font-style: italic;"
