@@ -1,16 +1,18 @@
 /**
  * @Test TestBench
  */
-describe('TestBench-Testingservice', () => {
-    let beforeEachTest;
-    let spy;
+describe('TestBench-Testingservice', function() {
+    // variables that can be accessed in the whole test
+    var beforeEachTest;
+    var spy;
 
-    beforeEach(() => {
+    beforeEach(function() {
+        // Before each actions
         beforeEachTest = true;
         spy = testBench.createSpy();
     });
 
-    it('should handle booleans correctly', () => {
+    it('should handle booleans correctly', function() {
         // given
         const boolean = true;
 
@@ -26,9 +28,9 @@ describe('TestBench-Testingservice', () => {
 
     });
 
-    it('should handle strings correctly', () => {
+    it('should handle strings correctly', function() {
         // given
-        let string;
+        var string;
         
         // when
         string = "Hallo Welt";
@@ -44,9 +46,11 @@ describe('TestBench-Testingservice', () => {
         expect(string).not.toBeNull();
         expect(string).toBeNaN();
         expect(string).toBeDefined();
+        expect(string).toBeInstanceOf("string");
+        expect(string).not.toBeInstanceOf("number");
     });
 
-    it('should handle undefined correctly', () => {
+    it('should handle undefined correctly', function() {
         // then
         expect(undefined).not.toBeTruthy();
         expect(undefined).toBeFalsy();
@@ -56,7 +60,7 @@ describe('TestBench-Testingservice', () => {
         expect(undefined).toBeNaN();
     });
 
-    it('should handle null correctly', () => {
+    it('should handle null correctly', function() {
         // then
         expect(null).not.toBeTruthy();
         expect(null).toBeFalsy();
@@ -67,7 +71,7 @@ describe('TestBench-Testingservice', () => {
         expect(null).toBeDefined();
     });
 
-    it('should handle NaN correctly', () => {
+    it('should handle NaN correctly', function() {
         // then
         expect(NaN).not.toBeTruthy();
         expect(NaN).toBeFalsy();
@@ -77,7 +81,7 @@ describe('TestBench-Testingservice', () => {
         expect(NaN).toBeNaN();
     });
 
-    it('should handle numbers correctly', () => {
+    it('should handle numbers correctly', function() {
         // given
         const number = 12;
 
@@ -99,9 +103,10 @@ describe('TestBench-Testingservice', () => {
         expect(0.335).toBeCloseTo(0.336);
         expect(0.335).not.toBeCloseTo(0.356);
         expect(number).toBeDefined();
+        expect(number).toBeInstanceOf("number");
     });
 
-    it('should handle functions correctly', () => {
+    it('should handle functions correctly', function() {
         // given
         function testFunc(){
             throw new Error("error");
@@ -117,7 +122,7 @@ describe('TestBench-Testingservice', () => {
 
     });
 
-    it('should handle array corretctly', () => {
+    it('should handle array corretctly', function() {
         const a = [1,2,3];
 
         expect(a).toHaveSize(3);
@@ -130,7 +135,7 @@ describe('TestBench-Testingservice', () => {
         expect(a).toContain(1);
     });
 
-    it('should handle objects corretctly', () => {
+    it('should handle objects corretctly', function() {
         const a = {a: 1, b: 2, c: 3};
 
         expect(a).toHaveSize(3);
@@ -143,7 +148,7 @@ describe('TestBench-Testingservice', () => {
         expect(a).toContain("a");
     });
 
-    it('should handle HTML nodes correctly', () => {
+    it('should handle HTML nodes correctly', function() {
         const testNode = document.querySelector('.TestBench');
 
         expect(testNode).not.toBeUndefined();
@@ -152,16 +157,26 @@ describe('TestBench-Testingservice', () => {
         expect(testNode).not.toHaveClass('House');
     });
 
-    it('should show context in Console', () => {
+    it('should show context', function() {
         expect(true).withContext('Test Context').toBeTrue();
         expect(true).not.withContext('Test Context').toBeNull();
         expect(true).withContext('Test Context').not.toBeNull();
     });
 
-    it('should handle spies correctly', () => {
+    it('should handle spies correctly', function() {
         //given
-        const spy2 = testBench.createSpy();
-        const spy3 = testBench.createSpy();
+        const testFunc = function() {
+            console.log("Fake function called!");
+        }
+        const spy2 = TestBench().createSpy().and.callFake(testFunc);
+
+        const originalFunc = function(){
+            console.log('Called original function')
+        }
+        const spy3 = TestBench('spy3').createSpy('Spy3', originalFunc);
+
+        const spy4 = TestBench().createSpy().and.returnValue(true);
+
         const testString = "haus";
         const testBoolean = true;
 
@@ -184,15 +199,17 @@ describe('TestBench-Testingservice', () => {
         expect(spy2).toHaveBeenCalledOnceWith(testString, testBoolean);
         expect(spy).toHaveBeenCalledTimes(1);
         expect(spy3).toHaveBeenCalledTimes(3);
+        expect(spy4()).toBeTrue();
+        expect(spy4()).not.toBeFalse();
     });
 
-    it('should handle asynchronous code', fakeAsync(() => {
+    it('should handle asynchronous code', fakeAsync(function() {
         // given
-        let flag = false;
+        var flag = false;
     
         // when
         // Simulates an asynchronous operation with setTimeout
-        setTimeout(() => {
+        setTimeout(function() {
           flag = true;
         }, 1000);
     

@@ -4,12 +4,25 @@
  * @global @function describe
  * @param {string} description 
  * @param {function} specDefinitions 
+ * @returns {void}
  */
 const describe = function (description, specDefinitions) {
     // creates the testBench object for the test
     testBench = TestBench();
     testBench.componentName = description;
     testBench.runnedExpectations = 0;
+
+    // Creates the TestBench-Html-Node
+    if(!document.querySelector('.TestBench')){
+        testBench.htmlService.createHtmlElement('div', '', document.body, {class: 'TestBench'});
+    }
+
+    testBench.htmlService.createHtmlElement('div', '', document.querySelector('.TestBench'), {'class':'header'});
+    testBench.htmlService.createHtmlElement('div', '', document.querySelector('.TestBench'), {'class':'container'});
+    
+    const nodeHeader = document.querySelector('.header')
+    testBench.htmlService.createHtmlElement('h1', ['Tests for:', description].join(' '), nodeHeader);
+    testBench.htmlService.createHtmlElement('h2', '<span id="success">0</span> / <span id="all">0</span> successful', nodeHeader);
 
     // print the test description
     console.log(["%c", "Test: ", description].join(""), "font-weight: 700; font-size: 1.25em;");

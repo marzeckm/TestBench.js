@@ -44,8 +44,8 @@ const Func = function () {
          * @returns {TestBench.Func.Spy}
          */
         function Spy() {
+            // needed to later make sure who was called first
             const waitingTill = TestBench().$getBrowserTime() + 1;
-            
             while(TestBench().$getBrowserTime() < waitingTill);
 
             callCount++;
@@ -74,6 +74,7 @@ const Func = function () {
 
         /**
          * Returns how often the function was called
+         * 
          * @public @function haveBeenCalledTimes
          * @returns {number}
          */
@@ -83,6 +84,7 @@ const Func = function () {
 
         /**
          * Returns the timestamp when spy was called first
+         * 
          * @public @function haveBeenCalledTimes
          * @returns {number}
          */
@@ -93,6 +95,7 @@ const Func = function () {
         /**
          * Returns the name of the spy
          * 
+         * @public @function getName
          * @returns {string}
          */
         Spy.getName = function (){
@@ -102,6 +105,7 @@ const Func = function () {
         /**
          * Returns the parameters with which the spy was called
          * 
+         * @public @function getStoredParams
          * @returns {any[]}
          */
         Spy.getStoredParams = function(){
@@ -115,6 +119,7 @@ const Func = function () {
             /**
              * returns a value when spy is called
              * 
+             * @public @function returnValue
              * @param {any} value 
              * @returns {TestBench.Func}
              */
@@ -126,6 +131,7 @@ const Func = function () {
             /**
              * Runs a function when spy is called
              * 
+             * @public @function callFake
              * @param {function} fn 
              * @returns {TestBench.Func}
              */

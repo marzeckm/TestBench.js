@@ -19,29 +19,34 @@ function fakeAsync(fn) {
          */
         const macrotasks = [];
 
-        // creates a function for flushing the microtasks
+        /**
+         * flushes the microtasks
+         * 
+         * @private @function flushMicrotasks
+         * @returns {void}
+         */
         const flushMicrotasks = function() {
             while (microtasks.length > 0) {
                 microtasks.shift()();
             }
         };
 
-        // Creates a function for flushing the macrotasks
+        /**
+         *  A function for flushing the macrotasks
+         * 
+         * @private @function flushMacrotasks
+         * @returns {void}
+         */
         const flushMacrotasks = function() {
             while (macrotasks.length > 0) {
                 macrotasks.shift()();
             }
         };
 
-        // Replaces the global tick with local tick
-        const globalTick = tick;
-        tick = function(time = 0) {
-            flushMicrotasks();
-            flushMacrotasks();
-            setTimeout(function() {}, time);
-        };
-
-        // Creates a fakeAsyncCallback
+        /**
+         * Creates a fakeAsyncCallback
+         * @param {function} callback
+         */
         const fakeAsyncCallback = function(callback) {
             return function() {
                 const task = function() {
@@ -52,6 +57,14 @@ function fakeAsync(fn) {
 
                 microtasks.push(task);
             };
+        };
+
+        // Replaces the global tick with local tick
+        const globalTick = tick;
+        tick = function(time = 0) {
+            flushMicrotasks();
+            flushMacrotasks();
+            setTimeout(function() {}, time);
         };
 
         // Replace window setTimeout with local version

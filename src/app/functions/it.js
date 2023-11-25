@@ -4,6 +4,7 @@
  * @global @function it
  * @param {string} expectation 
  * @param {function} assertion 
+ * @returns {void}
  */
 const it = function (expectation, assertion) {
     if (this.testBench !== undefined) {
@@ -11,6 +12,9 @@ const it = function (expectation, assertion) {
         testBench.runnedAssertions += 1;
         testBench.runnedAssertionName = expectation;
         testBench.runnedLocalExpectations = 0;
+
+        // Show the expectation in HTML
+        TestBench().htmlService.createHtmlElement('h3', ['Expectation:', 'It', expectation].join(' '), document.querySelector('.TestBench .container'));
 
         // runs the before each
         if(testBench.beforeEachAction){

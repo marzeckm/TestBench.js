@@ -1,5 +1,5 @@
 /**
- * Class for the TestBench
+ * Class for the TestBench (MainClass)
  * 
  * @class TestBench
  * @returns {TestBench}
@@ -20,12 +20,12 @@ const TestBench = function () {
          * @public @var {number} failedExpectations
          */
         failedExpectations: 0,
-        
+
         /**
          * @public @var {string} runnedAssertionName
          */
         runnedAssertionName: '',
-        
+
         /**
          * @public @var {number} runnedExpectations
          */
@@ -56,13 +56,21 @@ const TestBench = function () {
         createSpy: Func(),
 
         /**
+         * access to the Html-Service for 
+         * creating and changing html nodes
+         * 
+         * @public @var htmlService
+         */
+        htmlService: HtmlService(),
+
+        /**
          * @public @static @function $isSpy
          * @param {TestBench.Func} spy
          * @returns {boolean} 
          */
-        $isSpy(spy){
-            if(spy){
-                if(spy.haveBeenCalledTimes && spy.getName && spy.getStoredParams && spy.firstCalled){
+        $isSpy(spy) {
+            if (spy) {
+                if (spy.haveBeenCalledTimes && spy.getName && spy.getStoredParams && spy.firstCalled) {
                     return (
                         typeof spy.haveBeenCalledTimes() === 'number' &&
                         spy.getName() !== undefined &&
@@ -75,28 +83,58 @@ const TestBench = function () {
         },
 
         /**
-         * @private @function _getMicroSeconds
-         * @returns {number} microseconds 
-         */
-        _getMicroSeconds(){
-            return new Date().getTime() * 1000 + (performance.now() * 1000);
-        },
-
-        /**
          * Returns the time based on the Browser (milliseconds / microseconds)
          * 
+         * @static @function getBrowserTime
          * @returns {number} browserTime
          */
-        $getBrowserTime(){
+        $getBrowserTime() {
             return (this._supportsMicroseconds() ? new Date().getTime() : this._getMicroSeconds());
         },
 
         /**
-         * @private @function _supportsMicroseconds
+         * prints the result of the test into the html-body
+         * 
+         * @public @function printResult
+         * @param {string} innerHtml 
+         * @param {ResultType} ResultType 
+         */
+        printResult(innerHTML, ResultType) {
+            this._print('div', innerHTML, { class: ['test-result', ResultType + ''].join(" ") });
+        },
+
+        /**
+         * Returns the microseconds on modern browsers
+         * 
+         * @private @function getMicroSeconds
+         * @private @function _getMicroSeconds
+         * @returns {number} microseconds 
+         */
+        _getMicroSeconds() {
+            return new Date().getTime() * 1000 + (performance.now() * 1000);
+        },
+
+        /**
+         * Returns if the used browser supports microseconds
+         * 
+         * @private @function supportsMicroseconds
          * @returns {boolean} supportsMicroseconds
          */
         _supportsMicroseconds() {
             return typeof performance === 'object' && typeof performance.now === 'function';
-        }
+        },
+
+        /**
+         * 
+         * @param {string} innerHtml 
+         * @param {ResultType} ResultType 
+         */
+        _print(nodeType, innerHtml, options) {
+            this.htmlService.createHtmlElement(nodeType, innerHtml, document.querySelector('.TestBench .container'), options);
+        },
+
+        _setHtmlTestCounters(){
+
+        },
     }
 }
