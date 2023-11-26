@@ -3,9 +3,10 @@
  * @global @var {TestBench | undefined} testBench
  */
 var testBench;
+var consoleService;
 
 const styleEl = document.createElement('style');
-styleEl.innerHTML = '.TestBench,body,html{min-height:100%;width:100%}*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;margin:0}body,html{padding:0;background-color:#141618;color:#fff}.TestBench .header{width:100%;padding:1rem;background-color:rgba(15,85,18,.5)}.TestBench .test-result.error,.TestBench.error .header{background-color:rgba(85,15,15,.5)}.TestBench .container{padding:1rem}.TestBench .test-result{padding:.25rem .5rem;margin-bottom:.25rem;border-radius:.25rem}.TestBench .test-result.success{background-color:rgba(15,85,18,.2)}.TestBench h1{margin:0 0 .5rem}.TestBench h3{margin:1rem 0 .5rem}.TestBench h3:first-of-type{margin-top:0}.TestBench .context{color:rgba(120,120,120);font-style:italic;padding:.5rem .25rem}';
+styleEl.innerHTML = '.TestBench,body,html{min-height:100%;width:100%}*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;margin:0}body,html{padding:0;background-color:#141618;color:#fff}body>*{display:none}.TestBench{display:inherit}.TestBench .header{width:100%;padding:1rem;background-color:rgba(15,85,18,.5)}.TestBench .test-result.error,.TestBench.error .header{background-color:rgba(85,15,15,.5)}.TestBench .container{padding:1rem}.TestBench .test-result{padding:.25rem .5rem;margin-bottom:.25rem;border-radius:.25rem}.TestBench .test-result.success{background-color:rgba(15,85,18,.35)}.TestBench h1{margin:0 0 .5rem}.TestBench h3{margin:1rem 0 .5rem}.TestBench h3:first-of-type{margin-top:0}.TestBench .context{color:rgba(120,120,120);font-style:italic;padding:.5rem .25rem}';
 document.querySelector('head').appendChild(styleEl);
 
 const HtmlService = function(){
@@ -58,6 +59,94 @@ const HtmlService = function(){
         }
     }
 }
+
+/**
+ * COnsoleService provides basic method for printing in the console
+ * @returns {ControlService}
+ */
+const ConsoleService = function(){
+    return {
+        /**
+         * @private @var {boolean} supportsStyles
+         */
+        _supportsStyles: !(/Trident|MSIE/.test(navigator.userAgent)),
+
+        /**
+         * Prints a successful message
+         * 
+         * @public @function success
+         * @param {string} message 
+         * @returns {void}
+         */
+        success: function(message){
+            if(this._supportsStyles){
+                console.log(['%c', message].join(''), 'color: green;');
+            }else{
+                console.info(message);
+            }
+        },
+
+        /**
+         * Prints an error
+         * 
+         * @public @function error
+         * @param {string} message 
+         * @returns {void}
+         */
+        error: function(message){
+            if(this._supportsStyles){
+                console.log(['%c', message].join(''), 'color: red;');
+            }else{
+                console.error(message);
+            }
+        },
+
+        /**
+         * prints a comment
+         * 
+         * @public @function comment
+         * @param {string} message 
+         * @returns {void}
+         */
+        comment: function(message){
+            if(this._supportsStyles){
+                console.log(['%c', message].join(''), 'font-style: italic; color: grey;');
+            }else{
+                console.log('>', message);
+            }
+        },
+
+        /**
+         * prints a bold text
+         * 
+         * @public @function bold
+         * @param {string} message 
+         * @returns {void}
+         */
+        bold: function(message){
+            if(this._supportsStyles){
+                console.log(['%c', message].join(''), 'font-weight: 700;');
+            }else{
+                console.log('\n', message);
+            }
+        },
+
+        /**
+         * prints a header
+         * 
+         * @public @function header
+         * @param {string} message 
+         * @returns {void}
+         */
+        header: function(message){
+            if(this._supportsStyles){
+                console.log(['%c', message].join(''), 'font-weight: 700; font-size: 1.25em;');
+            }else{
+                console.log('\n>', message, '<\n');
+            }
+        }
+    }
+};
 
 /**
  * Enum for marking successful and failed tests
@@ -621,7 +710,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
             this._setHtmlResultNumbers()
             if(this.context){
                 const innerHtml = ['Context:', this.context].join(" ");
-                console.log(['%c',innerHtml].join(''), 'font-style: italic; color: grey;');
+                consoleService.comment(innerHtml);
                 testBench.htmlService.createHtmlElement('div', innerHtml, document.querySelector('.TestBench .container'), {class:'context'});
             }
         },
@@ -684,7 +773,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          */
         _testPassed: function(expectationName) {
             const resultText = [this._getExpectationText(expectationName), '(passed)'].join(' ');
-            console.log(['%c', resultText].join(''), 'color: green;');
+            consoleService.success(resultText);
             TestBench().printResult(resultText, ResultType().SUCCESS);
         },
 
@@ -697,7 +786,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          */
         _testFailed: function(expectationName) {
             const resultText = [this._getExpectationText(expectationName), '(failed)'].join(' ');
-            console.log(['%c', resultText].join(''), 'color: red;');
+            consoleService.error(resultText);
             TestBench().printResult(resultText, ResultType().ERROR);
             testBench.failedExpectations += 1;
             document.querySelector('.header').style = 'background-color: rgba(85, 15, 15, 0.8);'
@@ -1025,6 +1114,9 @@ const describe = function (description, specDefinitions) {
     testBench.componentName = description;
     testBench.runnedExpectations = 0;
 
+    // Setup the services
+    consoleService = ConsoleService();
+
     // Creates the TestBench-Html-Node
     if(!document.querySelector('.TestBench')){
         testBench.htmlService.createHtmlElement('div', '', document.body, {class: 'TestBench'});
@@ -1038,7 +1130,7 @@ const describe = function (description, specDefinitions) {
     testBench.htmlService.createHtmlElement('h2', '<span id="success">0</span> / <span id="all">0</span> successful', nodeHeader);
 
     // print the test description
-    console.log(["%c", "Test: ", description].join(""), "font-weight: 700; font-size: 1.25em;");
+    consoleService.header(['Test:', description].join(' '));
 
     // runs the definitions
     specDefinitions();
@@ -1063,6 +1155,7 @@ const describe = function (description, specDefinitions) {
 };
 
 
+
 /**
  * Defines what happens before each test
  * 
@@ -1074,6 +1167,7 @@ const beforeEach = function (action) {
     // sets the before each function in TestBench
     testBench.beforeEachAction = action;
 };
+
 
 /**
  * Defines a test case
@@ -1099,24 +1193,19 @@ const it = function (expectation, assertion) {
         }
 
         // prints the assertion-name
-        console.log(
-            ['%c', expectation].join(''), 
-            "font-weight: 700;"
-        );
+        consoleService.bold(expectation);
 
         // runs the test case itself
         assertion();
 
         if (testBench.runnedLocalExpectations <= 0) {
-            console.log(
-                "%cNo expectations for test case found!", 
-                "color: red; font-style: italic;"
-            );
+            consoleService.error('No expectations for test case found!');
         }
     } else {
-        console.error('Tests must be runned inside describe function!');
+        console.error('Tests have to run inside a describe function!');
     }
 };
+
 
 /**
  * Returns the Matchers for checking the expectations

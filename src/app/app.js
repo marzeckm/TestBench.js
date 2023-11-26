@@ -3,3 +3,4 @@
  * @global @var {TestBench | undefined} testBench
  */
 var testBench;
+var consoleService;

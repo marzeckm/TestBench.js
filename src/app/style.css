@@ -14,7 +14,12 @@ html, body{
     color: white;
 }
 
+body > *{
+    display: none;
+}
+
 .TestBench{
+    display: inherit;
     width: 100%;
     min-height: 100%;
 }
@@ -41,7 +46,7 @@ html, body{
 }
 
 .TestBench .test-result.success{
-    background-color: rgba(15, 85, 18, 0.2);
+    background-color: rgba(15, 85, 18, 0.35);
 }
 
 .TestBench .test-result.error{

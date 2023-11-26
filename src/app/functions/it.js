@@ -22,21 +22,15 @@ const it = function (expectation, assertion) {
         }
 
         // prints the assertion-name
-        console.log(
-            ['%c', expectation].join(''), 
-            "font-weight: 700;"
-        );
+        consoleService.bold(expectation);
 
         // runs the test case itself
         assertion();
 
         if (testBench.runnedLocalExpectations <= 0) {
-            console.log(
-                "%cNo expectations for test case found!", 
-                "color: red; font-style: italic;"
-            );
+            consoleService.error('No expectations for test case found!');
         }
     } else {
-        console.error('Tests must be runned inside describe function!');
+        console.error('Tests have to run inside a describe function!');
     }
 };

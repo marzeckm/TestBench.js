@@ -12,6 +12,9 @@ const describe = function (description, specDefinitions) {
     testBench.componentName = description;
     testBench.runnedExpectations = 0;
 
+    // Setup the services
+    consoleService = ConsoleService();
+
     // Creates the TestBench-Html-Node
     if(!document.querySelector('.TestBench')){
         testBench.htmlService.createHtmlElement('div', '', document.body, {class: 'TestBench'});
@@ -25,7 +28,7 @@ const describe = function (description, specDefinitions) {
     testBench.htmlService.createHtmlElement('h2', '<span id="success">0</span> / <span id="all">0</span> successful', nodeHeader);
 
     // print the test description
-    console.log(["%c", "Test: ", description].join(""), "font-weight: 700; font-size: 1.25em;");
+    consoleService.header(['Test:', description].join(' '));
 
     // runs the definitions
     specDefinitions();
