@@ -68,7 +68,7 @@ const TestBench = function () {
          * @param {TestBench.Func} spy
          * @returns {boolean} 
          */
-        $isSpy(spy) {
+        $isSpy: function(spy) {
             if (spy) {
                 if (spy.haveBeenCalledTimes && spy.getName && spy.getStoredParams && spy.firstCalled) {
                     return (
@@ -88,7 +88,7 @@ const TestBench = function () {
          * @static @function getBrowserTime
          * @returns {number} browserTime
          */
-        $getBrowserTime() {
+        $getBrowserTime: function() {
             return (this._supportsMicroseconds() ? new Date().getTime() : this._getMicroSeconds());
         },
 
@@ -99,7 +99,7 @@ const TestBench = function () {
          * @param {string} innerHtml 
          * @param {ResultType} ResultType 
          */
-        printResult(innerHTML, ResultType) {
+        printResult: function(innerHTML, ResultType) {
             this._print('div', innerHTML, { class: ['test-result', ResultType + ''].join(" ") });
         },
 
@@ -110,7 +110,7 @@ const TestBench = function () {
          * @private @function _getMicroSeconds
          * @returns {number} microseconds 
          */
-        _getMicroSeconds() {
+        _getMicroSeconds: function() {
             return new Date().getTime() * 1000 + (performance.now() * 1000);
         },
 
@@ -120,7 +120,7 @@ const TestBench = function () {
          * @private @function supportsMicroseconds
          * @returns {boolean} supportsMicroseconds
          */
-        _supportsMicroseconds() {
+        _supportsMicroseconds: function() {
             return typeof performance === 'object' && typeof performance.now === 'function';
         },
 
@@ -129,12 +129,8 @@ const TestBench = function () {
          * @param {string} innerHtml 
          * @param {ResultType} ResultType 
          */
-        _print(nodeType, innerHtml, options) {
+        _print: function(nodeType, innerHtml, options) {
             this.htmlService.createHtmlElement(nodeType, innerHtml, document.querySelector('.TestBench .container'), options);
-        },
-
-        _setHtmlTestCounters(){
-
-        },
+        }
     }
 }

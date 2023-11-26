@@ -259,7 +259,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {any} precision 
          */
         toBeCloseTo: function (expected, precision) {
-            const multiplier = 10 ** (precision || 2);
+            const multiplier = Math.pow(10, (precision || 2));
             this._evaluateTest(
                 (Math.round(this.value * multiplier) / multiplier === Math.round(expected * multiplier) / multiplier) === !this.isNot,
                 this._toBeTextWithValue('to be close to', expected)
@@ -428,7 +428,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         toHaveClass: function (expected) {
             if (this.value instanceof Element) {
                 this._evaluateTest(
-                    (this.value.classList.value.indexOf(expected) >= 0) === !this.isNot,
+                    (Array.prototype.slice.call(this.value.classList).indexOf(expected) >= 0) === !this.isNot,
                     this._toBeTextWithValue('to have class', expected)
                 );
             } else {
@@ -549,7 +549,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {string} ex 
          * @returns {string} expectationText
          */
-        _getExpectationText(ex) {
+        _getExpectationText: function(ex) {
             return ['Expect', ((this.name) ? this.name : this._valueInParenthesis()), (this.isNot ? 'not' : ''), ex].join(' ');
         },
 
@@ -559,7 +559,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @private @function _valueInParenthesis
          * @returns {string} valueInParanthesis
          */
-        _valueInParenthesis() {
+        _valueInParenthesis: function() {
             return ['"', this._getValueName(this.value) + '"'].join('');
         },
 
@@ -570,7 +570,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {any} value
          * @return {any} value
          */
-        _getValueName(value) {
+        _getValueName: function(value) {
             if(TestBench().$isSpy(value)){
                 return (value.getName() ? value.getName() : value.name);
             }else if(typeof value === 'function'){
@@ -587,7 +587,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {any} expected 
          * @returns {string}
          */
-        _toBeTextWithValue(toBeText, expected) {
+        _toBeTextWithValue: function(toBeText, expected) {
             return [toBeText, ['"', this._getValueName(expected)+'"'].join('')].join(' ');
         },
 
@@ -598,7 +598,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {string} expectationName 
          * @returns {void}
          */
-        _testPassed(expectationName) {
+        _testPassed: function(expectationName) {
             const resultText = [this._getExpectationText(expectationName), '(passed)'].join(' ');
             console.log(['%c', resultText].join(''), 'color: green;');
             TestBench().printResult(resultText, ResultType().SUCCESS);
@@ -611,7 +611,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {string} expectationName 
          * @return {void}
          */
-        _testFailed(expectationName) {
+        _testFailed: function(expectationName) {
             const resultText = [this._getExpectationText(expectationName), '(failed)'].join(' ');
             console.log(['%c', resultText].join(''), 'color: red;');
             TestBench().printResult(resultText, ResultType().ERROR);
@@ -619,7 +619,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
             document.querySelector('.header').style = 'background-color: rgba(85, 15, 15, 0.8);'
         },
 
-        _setHtmlResultNumbers(){
+        _setHtmlResultNumbers: function(){
             document.querySelector('#success').innerHTML = testBench.runnedExpectations - testBench.failedExpectations;
             document.querySelector('#all').innerHTML = testBench.runnedExpectations;
         },
@@ -632,7 +632,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {Error} error2
          * @returns {boolean} equals
          */
-        _compareError(error1, error2){
+        _compareError: function(error1, error2){
             return error1.name === error2.name &&
                    error1.message === error2.message
         }

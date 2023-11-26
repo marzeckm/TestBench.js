@@ -20,7 +20,7 @@ const HtmlService = function(){
          * 
          * @returns {void}
          */
-        createHtmlElement(nodeType, innerHtml, bindTo, attributes){
+        createHtmlElement: function(nodeType, innerHtml, bindTo, attributes){
             const htmlNode = document.createElement(nodeType);
             htmlNode.innerHTML = innerHtml;
 
@@ -39,7 +39,7 @@ const HtmlService = function(){
          * @param {string} addedClass
          * @returns {void}
          */
-        addClass(htmlNode, addedClass){
+        addClass: function(htmlNode, addedClass){
             htmlNode.classList.add(addedClass);
         },
 
@@ -50,7 +50,7 @@ const HtmlService = function(){
          * @param {string} attributes
          * @returns {void}
          */
-        setAttributes(htmlNode, attributes){
+        setAttributes: function(htmlNode, attributes){
             const attributeKeys = Object.keys(attributes);
             for(var i = 0; i < attributeKeys; i++){
                 htmlNode.setAttribute(attributeKeys[i], attributes[attributeKeys[i]]);
@@ -343,7 +343,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {any} precision 
          */
         toBeCloseTo: function (expected, precision) {
-            const multiplier = 10 ** (precision || 2);
+            const multiplier = Math.pow(10, (precision || 2));
             this._evaluateTest(
                 (Math.round(this.value * multiplier) / multiplier === Math.round(expected * multiplier) / multiplier) === !this.isNot,
                 this._toBeTextWithValue('to be close to', expected)
@@ -512,7 +512,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         toHaveClass: function (expected) {
             if (this.value instanceof Element) {
                 this._evaluateTest(
-                    (this.value.classList.value.indexOf(expected) >= 0) === !this.isNot,
+                    (Array.prototype.slice.call(this.value.classList).indexOf(expected) >= 0) === !this.isNot,
                     this._toBeTextWithValue('to have class', expected)
                 );
             } else {
@@ -633,7 +633,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {string} ex 
          * @returns {string} expectationText
          */
-        _getExpectationText(ex) {
+        _getExpectationText: function(ex) {
             return ['Expect', ((this.name) ? this.name : this._valueInParenthesis()), (this.isNot ? 'not' : ''), ex].join(' ');
         },
 
@@ -643,7 +643,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @private @function _valueInParenthesis
          * @returns {string} valueInParanthesis
          */
-        _valueInParenthesis() {
+        _valueInParenthesis: function() {
             return ['"', this._getValueName(this.value) + '"'].join('');
         },
 
@@ -654,7 +654,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {any} value
          * @return {any} value
          */
-        _getValueName(value) {
+        _getValueName: function(value) {
             if(TestBench().$isSpy(value)){
                 return (value.getName() ? value.getName() : value.name);
             }else if(typeof value === 'function'){
@@ -671,7 +671,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {any} expected 
          * @returns {string}
          */
-        _toBeTextWithValue(toBeText, expected) {
+        _toBeTextWithValue: function(toBeText, expected) {
             return [toBeText, ['"', this._getValueName(expected)+'"'].join('')].join(' ');
         },
 
@@ -682,7 +682,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {string} expectationName 
          * @returns {void}
          */
-        _testPassed(expectationName) {
+        _testPassed: function(expectationName) {
             const resultText = [this._getExpectationText(expectationName), '(passed)'].join(' ');
             console.log(['%c', resultText].join(''), 'color: green;');
             TestBench().printResult(resultText, ResultType().SUCCESS);
@@ -695,7 +695,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {string} expectationName 
          * @return {void}
          */
-        _testFailed(expectationName) {
+        _testFailed: function(expectationName) {
             const resultText = [this._getExpectationText(expectationName), '(failed)'].join(' ');
             console.log(['%c', resultText].join(''), 'color: red;');
             TestBench().printResult(resultText, ResultType().ERROR);
@@ -703,7 +703,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
             document.querySelector('.header').style = 'background-color: rgba(85, 15, 15, 0.8);'
         },
 
-        _setHtmlResultNumbers(){
+        _setHtmlResultNumbers: function(){
             document.querySelector('#success').innerHTML = testBench.runnedExpectations - testBench.failedExpectations;
             document.querySelector('#all').innerHTML = testBench.runnedExpectations;
         },
@@ -716,7 +716,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
          * @param {Error} error2
          * @returns {boolean} equals
          */
-        _compareError(error1, error2){
+        _compareError: function(error1, error2){
             return error1.name === error2.name &&
                    error1.message === error2.message
         }
@@ -730,7 +730,10 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
  * @returns {TestBench.Func}
  */
 const Func = function () {
-    return function (name = null, originalFn = null) {
+    return function (name, originalFn) {
+        name = name || null;
+        originalFn = originalFn || null;
+
         /**
          * How often was the spy called
          * @private @var {number} callCount
@@ -870,6 +873,7 @@ const Func = function () {
     };
 };
 
+
 /**
  * Class for the TestBench (MainClass)
  * 
@@ -940,7 +944,7 @@ const TestBench = function () {
          * @param {TestBench.Func} spy
          * @returns {boolean} 
          */
-        $isSpy(spy) {
+        $isSpy: function(spy) {
             if (spy) {
                 if (spy.haveBeenCalledTimes && spy.getName && spy.getStoredParams && spy.firstCalled) {
                     return (
@@ -960,7 +964,7 @@ const TestBench = function () {
          * @static @function getBrowserTime
          * @returns {number} browserTime
          */
-        $getBrowserTime() {
+        $getBrowserTime: function() {
             return (this._supportsMicroseconds() ? new Date().getTime() : this._getMicroSeconds());
         },
 
@@ -971,7 +975,7 @@ const TestBench = function () {
          * @param {string} innerHtml 
          * @param {ResultType} ResultType 
          */
-        printResult(innerHTML, ResultType) {
+        printResult: function(innerHTML, ResultType) {
             this._print('div', innerHTML, { class: ['test-result', ResultType + ''].join(" ") });
         },
 
@@ -982,7 +986,7 @@ const TestBench = function () {
          * @private @function _getMicroSeconds
          * @returns {number} microseconds 
          */
-        _getMicroSeconds() {
+        _getMicroSeconds: function() {
             return new Date().getTime() * 1000 + (performance.now() * 1000);
         },
 
@@ -992,7 +996,7 @@ const TestBench = function () {
          * @private @function supportsMicroseconds
          * @returns {boolean} supportsMicroseconds
          */
-        _supportsMicroseconds() {
+        _supportsMicroseconds: function() {
             return typeof performance === 'object' && typeof performance.now === 'function';
         },
 
@@ -1001,13 +1005,9 @@ const TestBench = function () {
          * @param {string} innerHtml 
          * @param {ResultType} ResultType 
          */
-        _print(nodeType, innerHtml, options) {
+        _print: function(nodeType, innerHtml, options) {
             this.htmlService.createHtmlElement(nodeType, innerHtml, document.querySelector('.TestBench .container'), options);
-        },
-
-        _setHtmlTestCounters(){
-
-        },
+        }
     }
 }
 
@@ -1138,6 +1138,7 @@ const expect = function (actual) {
     return matchers;
 };
 
+
 /**
  * Creates a fakeAsync function of a function
  * 
@@ -1201,7 +1202,10 @@ function fakeAsync(fn) {
 
         // Replaces the global tick with local tick
         const globalTick = tick;
-        tick = function(time = 0) {
+        tick = function(time) {
+            // standard (ie11 fallback)
+            time = time | 0;
+
             flushMicrotasks();
             flushMacrotasks();
             setTimeout(function() {}, time);
@@ -1230,6 +1234,7 @@ function fakeAsync(fn) {
     };
 }
 
+ 
 /**
  * Stopps the further execution of a function for a specified time
  * 
@@ -1237,7 +1242,8 @@ function fakeAsync(fn) {
  * @param {number} milliseconds
  * @returns {void} 
  */
-var tick = function(milliseconds=0) {
+var tick = function(milliseconds) {
+    milliseconds= milliseconds || null
     const start = new Date().getTime();
     
     // Defines the moment of beginning

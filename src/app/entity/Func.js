@@ -5,7 +5,10 @@
  * @returns {TestBench.Func}
  */
 const Func = function () {
-    return function (name = null, originalFn = null) {
+    return function (name, originalFn) {
+        name = name || null;
+        originalFn = originalFn || null;
+
         /**
          * How often was the spy called
          * @private @var {number} callCount

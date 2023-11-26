@@ -117,8 +117,8 @@ describe('TestBench-Testingservice', function() {
         expect(testFunc).toThrow(Error("error"));
         expect(testFunc).toThrow(Error("success"));
         expect(testFunc).not.toThrow(/*CustomError*/{name: "NullPointerError", message: "Test Message", stack: null});
-        expect(testFunc).toThrowMatching((e) => {return e.message === "error"});
-        expect(testFunc).not.toThrowMatching((e) => {return e.message === "success"});
+        expect(testFunc).toThrowMatching(function(e){return e.message === "error"});
+        expect(testFunc).not.toThrowMatching(function(e) {return e.message === "success"});
 
     });
 

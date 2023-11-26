@@ -5,7 +5,8 @@
  * @param {number} milliseconds
  * @returns {void} 
  */
-var tick = function(milliseconds=0) {
+var tick = function(milliseconds) {
+    milliseconds= milliseconds || null
     const start = new Date().getTime();
     
     // Defines the moment of beginning

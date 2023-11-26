@@ -10,7 +10,7 @@ const HtmlService = function(){
          * 
          * @returns {void}
          */
-        createHtmlElement(nodeType, innerHtml, bindTo, attributes){
+        createHtmlElement: function(nodeType, innerHtml, bindTo, attributes){
             const htmlNode = document.createElement(nodeType);
             htmlNode.innerHTML = innerHtml;
 
@@ -29,7 +29,7 @@ const HtmlService = function(){
          * @param {string} addedClass
          * @returns {void}
          */
-        addClass(htmlNode, addedClass){
+        addClass: function(htmlNode, addedClass){
             htmlNode.classList.add(addedClass);
         },
 
@@ -40,7 +40,7 @@ const HtmlService = function(){
          * @param {string} attributes
          * @returns {void}
          */
-        setAttributes(htmlNode, attributes){
+        setAttributes: function(htmlNode, attributes){
             const attributeKeys = Object.keys(attributes);
             for(var i = 0; i < attributeKeys; i++){
                 htmlNode.setAttribute(attributeKeys[i], attributes[attributeKeys[i]]);

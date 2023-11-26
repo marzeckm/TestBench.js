@@ -61,7 +61,10 @@ function fakeAsync(fn) {
 
         // Replaces the global tick with local tick
         const globalTick = tick;
-        tick = function(time = 0) {
+        tick = function(time) {
+            // standard (ie11 fallback)
+            time = time | 0;
+
             flushMicrotasks();
             flushMacrotasks();
             setTimeout(function() {}, time);
