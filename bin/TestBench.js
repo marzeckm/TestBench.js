@@ -1,10 +1,24 @@
 /**
  * Object for a TestBench instance to run and storage
- * @global @var {TestBench | undefined} testBench
+ * @global @var {TestBench} testBench
  */
 var testBench;
+
+/**
+ * Object for a TestBench instance to run and storage
+ * @global @var {ConsoleService} consoleService
+ */
 var consoleService;
 
+/**
+ * Object for a TestBench instance to run and storage
+ * @global @var {HtmlService} htmlService
+ */
+var htmlService;
+
+/**
+ * Inject the style
+ */
 const styleEl = document.createElement('style');
 styleEl.innerHTML = '.TestBench,body,html{min-height:100%;width:100%}*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;margin:0}body,html{padding:0;background-color:#141618;color:#fff}body>*{display:none}.TestBench{display:inherit}.TestBench .header{width:100%;padding:1rem;background-color:rgba(15,85,18,.5)}.TestBench .test-result.error,.TestBench.error .header{background-color:rgba(85,15,15,.5)}.TestBench .container{padding:1rem}.TestBench .test-result{padding:.25rem .5rem;margin-bottom:.25rem;border-radius:.25rem}.TestBench .test-result.success{background-color:rgba(15,85,18,.35)}.TestBench h1{margin:0 0 .5rem}.TestBench h3{margin:1rem 0 .5rem}.TestBench h3:first-of-type{margin-top:0}.TestBench .context{color:rgba(120,120,120);font-style:italic;padding:.5rem .25rem}';
 document.querySelector('head').appendChild(styleEl);
@@ -60,9 +74,10 @@ const HtmlService = function(){
     }
 }
 
+
 /**
- * COnsoleService provides basic method for printing in the console
- * @returns {ControlService}
+ * ConsoleService provides basic method for printing in the console
+ * @returns {ConsoleService}
  */
 const ConsoleService = function(){
     return {
@@ -76,12 +91,16 @@ const ConsoleService = function(){
          * 
          * @public @function success
          * @param {string} message 
+         * @param {boolean} isBigger 
          * @returns {void}
          */
-        success: function(message){
+        success: function(message, isBigger){
+            isBigger = isBigger || false;
+
             if(this._supportsStyles){
-                console.log(['%c', message].join(''), 'color: green;');
+                console.log(['%c', message].join(''), ['color: green;', (isBigger ? 'font-size: 1.25rem;' : '')].join(''));
             }else{
+                isBigger ? console.log('') : '';
                 console.info(message);
             }
         },
@@ -91,12 +110,16 @@ const ConsoleService = function(){
          * 
          * @public @function error
          * @param {string} message 
+         * @param {boolean} isBigger 
          * @returns {void}
          */
-        error: function(message){
+        error: function(message, isBigger){
+            isBigger = isBigger || false;
+
             if(this._supportsStyles){
-                console.log(['%c', message].join(''), 'color: red;');
+                console.log(['%c', message].join(''), ['color: red;', (isBigger ? 'font-size: 1.25rem;' : '')].join(''));
             }else{
+                isBigger ? console.log('') : '';
                 console.error(message);
             }
         },
@@ -127,7 +150,7 @@ const ConsoleService = function(){
             if(this._supportsStyles){
                 console.log(['%c', message].join(''), 'font-weight: 700;');
             }else{
-                console.log('\n', message);
+                console.log(['\n', message].join(''));
             }
         },
 
@@ -148,27 +171,27 @@ const ConsoleService = function(){
     }
 };
 
+
 /**
  * Enum for marking successful and failed tests
  * 
  * @enum {ResultType}
  * @returns {ResultType}
  */
-const ResultType = function(){
-    return {
-        /**
-         * When a test succeeded (green)
-         * @var {ResultType} SUCCESS
-         */
-        SUCCESS: "success",
+const ResultType = {
+    /**
+     * When a test succeeded (green)
+     * @var {ResultType} SUCCESS
+     */
+    SUCCESS: "success",
 
-        /**
-         * When a test failed (red)
-         * @var {ResultType} ERROR
-         */
-        ERROR: "error",
-    }
-} 
+    /**
+     * When a test failed (red)
+     * @var {ResultType} ERROR
+     */
+    ERROR: "error",
+}; 
+
 
 
 /**
@@ -711,7 +734,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
             if(this.context){
                 const innerHtml = ['Context:', this.context].join(" ");
                 consoleService.comment(innerHtml);
-                testBench.htmlService.createHtmlElement('div', innerHtml, document.querySelector('.TestBench .container'), {class:'context'});
+                htmlService.createHtmlElement('div', innerHtml, document.querySelector('.TestBench .container'), {class:'context'});
             }
         },
 
@@ -774,7 +797,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         _testPassed: function(expectationName) {
             const resultText = [this._getExpectationText(expectationName), '(passed)'].join(' ');
             consoleService.success(resultText);
-            TestBench().printResult(resultText, ResultType().SUCCESS);
+            TestBench().printResult(resultText, ResultType.SUCCESS);
         },
 
         /**
@@ -787,9 +810,9 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         _testFailed: function(expectationName) {
             const resultText = [this._getExpectationText(expectationName), '(failed)'].join(' ');
             consoleService.error(resultText);
-            TestBench().printResult(resultText, ResultType().ERROR);
+            TestBench().printResult(resultText, ResultType.ERROR);
             testBench.failedExpectations += 1;
-            document.querySelector('.header').style = 'background-color: rgba(85, 15, 15, 0.8);'
+            document.querySelector('.header').style.backgroundColor = 'rgba(85, 15, 15, 0.8)'
         },
 
         _setHtmlResultNumbers: function(){
@@ -1021,14 +1044,6 @@ const TestBench = function () {
         createSpy: Func(),
 
         /**
-         * access to the Html-Service for 
-         * creating and changing html nodes
-         * 
-         * @public @var htmlService
-         */
-        htmlService: HtmlService(),
-
-        /**
          * @public @static @function $isSpy
          * @param {TestBench.Func} spy
          * @returns {boolean} 
@@ -1062,10 +1077,10 @@ const TestBench = function () {
          * 
          * @public @function printResult
          * @param {string} innerHtml 
-         * @param {ResultType} ResultType 
+         * @param {ResultType} resultType 
          */
-        printResult: function(innerHTML, ResultType) {
-            this._print('div', innerHTML, { class: ['test-result', ResultType + ''].join(" ") });
+        printResult: function(innerHTML, resultType) {
+            this._print('div', innerHTML, { class: ['test-result', resultType + ''].join(" ") });
         },
 
         /**
@@ -1091,11 +1106,12 @@ const TestBench = function () {
 
         /**
          * 
+         * @param {string} nodeType 
          * @param {string} innerHtml 
-         * @param {ResultType} ResultType 
+         * @param {Map<string, string>} options 
          */
         _print: function(nodeType, innerHtml, options) {
-            this.htmlService.createHtmlElement(nodeType, innerHtml, document.querySelector('.TestBench .container'), options);
+            htmlService.createHtmlElement(nodeType, innerHtml, document.querySelector('.TestBench .container'), options);
         }
     }
 }
@@ -1116,18 +1132,19 @@ const describe = function (description, specDefinitions) {
 
     // Setup the services
     consoleService = ConsoleService();
+    htmlService = HtmlService();
 
     // Creates the TestBench-Html-Node
     if(!document.querySelector('.TestBench')){
-        testBench.htmlService.createHtmlElement('div', '', document.body, {class: 'TestBench'});
+        htmlService.createHtmlElement('div', '', document.body, {class: 'TestBench'});
     }
 
-    testBench.htmlService.createHtmlElement('div', '', document.querySelector('.TestBench'), {'class':'header'});
-    testBench.htmlService.createHtmlElement('div', '', document.querySelector('.TestBench'), {'class':'container'});
+    htmlService.createHtmlElement('div', '', document.querySelector('.TestBench'), {'class':'header'});
+    htmlService.createHtmlElement('div', '', document.querySelector('.TestBench'), {'class':'container'});
     
     const nodeHeader = document.querySelector('.header')
-    testBench.htmlService.createHtmlElement('h1', ['Tests for:', description].join(' '), nodeHeader);
-    testBench.htmlService.createHtmlElement('h2', '<span id="success">0</span> / <span id="all">0</span> successful', nodeHeader);
+    htmlService.createHtmlElement('h1', ['Tests for:', description].join(' '), nodeHeader);
+    htmlService.createHtmlElement('h2', '<span id="success">0</span> / <span id="all">0</span> successful', nodeHeader);
 
     // print the test description
     consoleService.header(['Test:', description].join(' '));
@@ -1142,17 +1159,12 @@ const describe = function (description, specDefinitions) {
 
     // Prints how many Tests have failed / passed
     const passedExpectations = testBench.runnedExpectations - testBench.failedExpectations;
-    console.log(
-        '\n%c' + [passedExpectations, '/', testBench.runnedExpectations, "tests passed"].join(" "),
-        'color: green; font-size: 1.25em;'
-    );
+    consoleService.success([passedExpectations, '/', testBench.runnedExpectations, "tests passed"].join(" "), true);
     if(testBench.failedExpectations > 0){
-        console.log(
-            '%c' + [testBench.failedExpectations, '/', testBench.runnedExpectations, "tests failed"].join(" "),
-            'color: red; font-size: 1.25em;'
-        );
+        consoleService.error([testBench.failedExpectations, '/', testBench.runnedExpectations, "tests failed"].join(" "), true);
     }
 };
+
 
 
 
@@ -1185,7 +1197,7 @@ const it = function (expectation, assertion) {
         testBench.runnedLocalExpectations = 0;
 
         // Show the expectation in HTML
-        TestBench().htmlService.createHtmlElement('h3', ['Expectation:', 'It', expectation].join(' '), document.querySelector('.TestBench .container'));
+        htmlService.createHtmlElement('h3', ['Expectation:', 'It', expectation].join(' '), document.querySelector('.TestBench .container'));
 
         // runs the before each
         if(testBench.beforeEachAction){

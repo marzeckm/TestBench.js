@@ -14,7 +14,7 @@ const it = function (expectation, assertion) {
         testBench.runnedLocalExpectations = 0;
 
         // Show the expectation in HTML
-        TestBench().htmlService.createHtmlElement('h3', ['Expectation:', 'It', expectation].join(' '), document.querySelector('.TestBench .container'));
+        htmlService.createHtmlElement('h3', ['Expectation:', 'It', expectation].join(' '), document.querySelector('.TestBench .container'));
 
         // runs the before each
         if(testBench.beforeEachAction){

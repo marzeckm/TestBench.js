@@ -538,7 +538,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
             if(this.context){
                 const innerHtml = ['Context:', this.context].join(" ");
                 consoleService.comment(innerHtml);
-                testBench.htmlService.createHtmlElement('div', innerHtml, document.querySelector('.TestBench .container'), {class:'context'});
+                htmlService.createHtmlElement('div', innerHtml, document.querySelector('.TestBench .container'), {class:'context'});
             }
         },
 
@@ -601,7 +601,7 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         _testPassed: function(expectationName) {
             const resultText = [this._getExpectationText(expectationName), '(passed)'].join(' ');
             consoleService.success(resultText);
-            TestBench().printResult(resultText, ResultType().SUCCESS);
+            TestBench().printResult(resultText, ResultType.SUCCESS);
         },
 
         /**
@@ -614,9 +614,9 @@ const ArrayLikeMatchers = function (value, isNot, context, name) {
         _testFailed: function(expectationName) {
             const resultText = [this._getExpectationText(expectationName), '(failed)'].join(' ');
             consoleService.error(resultText);
-            TestBench().printResult(resultText, ResultType().ERROR);
+            TestBench().printResult(resultText, ResultType.ERROR);
             testBench.failedExpectations += 1;
-            document.querySelector('.header').style = 'background-color: rgba(85, 15, 15, 0.8);'
+            document.querySelector('.header').style.backgroundColor = 'rgba(85, 15, 15, 0.8)'
         },
 
         _setHtmlResultNumbers: function(){

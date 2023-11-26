@@ -23,7 +23,7 @@ describe('TestBench-Testingservice', function() {
         expect(boolean).not.toBeUndefined();
         expect(boolean).not.toBeNull();
         expect(boolean).not.toBeNaN();
-
+        
         expect(beforeEachTest).toBeTrue();
 
     });

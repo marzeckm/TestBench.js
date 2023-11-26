@@ -1,6 +1,6 @@
 /**
- * COnsoleService provides basic method for printing in the console
- * @returns {ControlService}
+ * ConsoleService provides basic method for printing in the console
+ * @returns {ConsoleService}
  */
 const ConsoleService = function(){
     return {
@@ -14,12 +14,16 @@ const ConsoleService = function(){
          * 
          * @public @function success
          * @param {string} message 
+         * @param {boolean} isBigger 
          * @returns {void}
          */
-        success: function(message){
+        success: function(message, isBigger){
+            isBigger = isBigger || false;
+
             if(this._supportsStyles){
-                console.log(['%c', message].join(''), 'color: green;');
+                console.log(['%c', message].join(''), ['color: green;', (isBigger ? 'font-size: 1.25rem;' : '')].join(''));
             }else{
+                isBigger ? console.log('') : '';
                 console.info(message);
             }
         },
@@ -29,12 +33,16 @@ const ConsoleService = function(){
          * 
          * @public @function error
          * @param {string} message 
+         * @param {boolean} isBigger 
          * @returns {void}
          */
-        error: function(message){
+        error: function(message, isBigger){
+            isBigger = isBigger || false;
+
             if(this._supportsStyles){
-                console.log(['%c', message].join(''), 'color: red;');
+                console.log(['%c', message].join(''), ['color: red;', (isBigger ? 'font-size: 1.25rem;' : '')].join(''));
             }else{
+                isBigger ? console.log('') : '';
                 console.error(message);
             }
         },
@@ -65,7 +73,7 @@ const ConsoleService = function(){
             if(this._supportsStyles){
                 console.log(['%c', message].join(''), 'font-weight: 700;');
             }else{
-                console.log('\n', message);
+                console.log(['\n', message].join(''));
             }
         },
 

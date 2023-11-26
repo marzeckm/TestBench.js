@@ -4,18 +4,16 @@
  * @enum {ResultType}
  * @returns {ResultType}
  */
-const ResultType = function(){
-    return {
-        /**
-         * When a test succeeded (green)
-         * @var {ResultType} SUCCESS
-         */
-        SUCCESS: "success",
+const ResultType = {
+    /**
+     * When a test succeeded (green)
+     * @var {ResultType} SUCCESS
+     */
+    SUCCESS: "success",
 
-        /**
-         * When a test failed (red)
-         * @var {ResultType} ERROR
-         */
-        ERROR: "error",
-    }
-} 
+    /**
+     * When a test failed (red)
+     * @var {ResultType} ERROR
+     */
+    ERROR: "error",
+};

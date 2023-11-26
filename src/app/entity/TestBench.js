@@ -97,10 +97,10 @@ const TestBench = function () {
          * 
          * @public @function printResult
          * @param {string} innerHtml 
-         * @param {ResultType} ResultType 
+         * @param {ResultType} resultType 
          */
-        printResult: function(innerHTML, ResultType) {
-            this._print('div', innerHTML, { class: ['test-result', ResultType + ''].join(" ") });
+        printResult: function(innerHTML, resultType) {
+            this._print('div', innerHTML, { class: ['test-result', resultType + ''].join(" ") });
         },
 
         /**
@@ -126,11 +126,12 @@ const TestBench = function () {
 
         /**
          * 
+         * @param {string} nodeType 
          * @param {string} innerHtml 
-         * @param {ResultType} ResultType 
+         * @param {Map<string, string>} options 
          */
         _print: function(nodeType, innerHtml, options) {
-            this.htmlService.createHtmlElement(nodeType, innerHtml, document.querySelector('.TestBench .container'), options);
+            htmlService.createHtmlElement(nodeType, innerHtml, document.querySelector('.TestBench .container'), options);
         }
     }
 }
