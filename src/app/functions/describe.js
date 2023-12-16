@@ -30,6 +30,10 @@ const describe = function (description, specDefinitions) {
         const nodeHeader = document.querySelector('.header')
         htmlService.createHtmlElement('h1', ['Tests for:', description].join(' '), nodeHeader);
         htmlService.createHtmlElement('h2', '<span id="success">0</span> / <span id="all">0</span> successful', nodeHeader);
+    }else{
+        htmlService.createHtmlElement(
+            'h2', ['Tests for:', description].join(' '), document.querySelector('.TestBench .container'), {'style': 'margin: 2rem 0 1rem 0;'}
+        );
     }
 
     // print the test description
