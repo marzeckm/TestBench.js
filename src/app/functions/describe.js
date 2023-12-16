@@ -8,9 +8,11 @@
  */
 const describe = function (description, specDefinitions) {
     // creates the testBench object for the test
-    testBench = TestBench();
-    testBench.componentName = description;
-    testBench.runnedExpectations = 0;
+    if(!testBench){
+        testBench = TestBench();
+        testBench.componentName = description;
+        testBench.runnedExpectations = 0;    
+    }
 
     // Setup the services
     consoleService = ConsoleService();
@@ -21,12 +23,14 @@ const describe = function (description, specDefinitions) {
         htmlService.createHtmlElement('div', '', document.body, {class: 'TestBench'});
     }
 
-    htmlService.createHtmlElement('div', '', document.querySelector('.TestBench'), {'class':'header'});
-    htmlService.createHtmlElement('div', '', document.querySelector('.TestBench'), {'class':'container'});
-    
-    const nodeHeader = document.querySelector('.header')
-    htmlService.createHtmlElement('h1', ['Tests for:', description].join(' '), nodeHeader);
-    htmlService.createHtmlElement('h2', '<span id="success">0</span> / <span id="all">0</span> successful', nodeHeader);
+    if(!document.querySelector('div.header')){
+        htmlService.createHtmlElement('div', '', document.querySelector('.TestBench'), {'class':'header'});
+        htmlService.createHtmlElement('div', '', document.querySelector('.TestBench'), {'class':'container'});
+        
+        const nodeHeader = document.querySelector('.header')
+        htmlService.createHtmlElement('h1', ['Tests for:', description].join(' '), nodeHeader);
+        htmlService.createHtmlElement('h2', '<span id="success">0</span> / <span id="all">0</span> successful', nodeHeader);
+    }
 
     // print the test description
     consoleService.header(['Test:', description].join(' '));
